@@ -1,121 +1,165 @@
 <?php
-// TODO ucmitz  : コード確認要
-return;
 /**
  * baserCMS :  Based Website Development Project <https://basercms.net>
- * Copyright (c) baserCMS Users Community <https://basercms.net/community/>
+ * Copyright (c) NPO baser foundation <https://baserfoundation.org/>
  *
- * @copyright       Copyright (c) baserCMS Users Community
- * @link            https://basercms.net baserCMS Project
- * @package         Uploader.Test.Case.Controller
- * @since           baserCMS v 4.0.9
- * @license         https://basercms.net/license/index.html
+ * @copyright     Copyright (c) NPO baser foundation
+ * @link          https://basercms.net baserCMS Project
+ * @since         5.0.0
+ * @license       https://basercms.net/license/index.html MIT License
  */
 
-App::uses('UploaderFilesController', 'BcUploader.Controller');
+namespace BcUploader\Test\TestCase\Controller\Api;
+
+use BaserCore\Test\Scenario\InitAppScenario;
+use BaserCore\TestSuite\BcTestCase;
+use Cake\Filesystem\File;
+use BcUploader\Test\Scenario\UploaderFilesScenario;
+use BcUploader\Test\Factory\UploaderFileFactory;
+use CakephpFixtureFactories\Scenario\ScenarioAwareTrait;
+use Cake\TestSuite\IntegrationTestTrait;
 
 /**
  * Class UploaderFilesControllerTest
- *
- * @package Uploader.Test.Case.Controller
- * @property  UploaderFilesController $UploaderFilesController
  */
-class UploaderFilesControllerTest extends BaserTestCase
+class UploaderFilesControllerTest extends BcTestCase
 {
 
     /**
-     * set up
-     *
-     * @return void
+     * ScenarioAwareTrait
      */
-    public function setUp()
+    use ScenarioAwareTrait;
+    use IntegrationTestTrait;
+
+    /**
+     * Fixtures
+     *
+     * @var array
+     */
+    public $fixtures = [
+        'plugin.BaserCore.Factory/Sites',
+        'plugin.BaserCore.Factory/SiteConfigs',
+        'plugin.BaserCore.Factory/Users',
+        'plugin.BaserCore.Factory/UsersUserGroups',
+        'plugin.BaserCore.Factory/UserGroups',
+        'plugin.BcUploader.Factory/UploaderFiles',
+        'plugin.BcUploader.Factory/UploaderCategories',
+        'plugin.BcUploader.Factory/UploaderConfigs',
+    ];
+
+    /**
+     * Access Token
+     * @var string
+     */
+    public $accessToken = null;
+
+    /**
+     * Refresh Token
+     * @var null
+     */
+    public $refreshToken = null;
+
+    /**
+     * set up
+     */
+    public function setUp(): void
     {
+        $this->setFixtureTruncate();
         parent::setUp();
+        $this->loadFixtureScenario(InitAppScenario::class);
+        $token = $this->apiLoginAdmin(1);
+        $this->accessToken = $token['access_token'];
+        $this->refreshToken = $token['refresh_token'];
     }
 
     /**
-     * tearDown
+     * Tear Down
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
     }
 
-    public function testBeforeFilter()
+    /**
+     * test index
+     * @return void
+     */
+    public function test_index()
     {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
+        //データを生成
+        $this->loadFixtureScenario(UploaderFilesScenario::class);
+
+        //APIを呼ぶ
+        $this->post("/baser/api/bc-uploader/uploader_files/index.json?token=" . $this->accessToken);
+        // レスポンスコードを確認する
+        $this->assertResponseOk();
+        // 戻る値を確認
+        $result = json_decode((string)$this->_response->getBody());
+        $this->assertCount(6, $result->uploaderFiles);
     }
 
     /**
-     * [ADMIN] ファイル一覧
+     * test upload
      */
-    public function testAdmin_index()
+    public function test_upload()
     {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
+        $pathTest = TMP . 'test' . DS;
+        $pathUpload = WWW_ROOT . DS . 'files' . DS . 'uploads' . DS;
+
+        //テストファイルを作成
+        new File($pathTest . 'testUpload.txt', true);
+        $testFile = $pathTest . 'testUpload.txt';
+
+        //アップロードファイルを準備
+        $this->setUploadFileToRequest('file', $testFile);
+        $this->setUnlockedFields(['file']);
+
+        //APIをコル
+        $this->post("/baser/api/bc-uploader/uploader_files/upload.json?token=" . $this->accessToken);
+
+        //レスポンスステータスを確認
+        $this->assertResponseOk();
+
+        //戻る値を確認
+        $result = json_decode((string)$this->_response->getBody());
+        $this->assertEquals('アップロードファイル「testUpload.txt」を追加しました。', $result->message);
+        $this->assertNotNull($result->uploaderFile);
+
+        //ファイルがアップロードできるか確認
+        $this->assertTrue(file_exists($pathUpload . 'testUpload.txt'));
+
+        //不要ファイルを削除
+        unlink($pathUpload . 'testUpload.txt');
     }
 
     /**
-     * [ADMIN] ファイル一覧を表示
+     * test edit
      */
-    public function testAdmin_ajax_list()
+    public function test_edit()
     {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
+        //データを生成
+        UploaderFileFactory::make(['id' => 1, 'name' => '2_2.jpg', 'atl' => '2_2.jpg', 'user_id' => 1])->persist();
+        $data = UploaderFileFactory::get(1);
+        $data->alt = 'test edit';
+        //APIを呼ぶ
+        $this->post("/baser/api/bc-uploader/uploader_files/edit/1.json?token=" . $this->accessToken, $data->toArray());
+        // レスポンスコードを確認する
+        $this->assertResponseOk();
+        //戻る値を確認
+        $result = json_decode((string)$this->_response->getBody());
+        //メッセージを確認
+        $this->assertEquals($result->message, 'アップロードファイル「2_2.jpg」を更新しました。');
+        //値が変更されるか確認
+        $this->assertEquals($result->uploaderFile->alt, 'test edit');
     }
 
     /**
-     * [ADMIN] Ajaxファイルアップロード
+     * test delete
+     * @return void
      */
-    public function testAdmin_ajax_upload()
-    {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
-    }
-
-    /**
-     * [ADMIN] サイズを指定して画像タグを取得する
-     */
-    public function testAdmin_ajax_image()
-    {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
-    }
-
-    /**
-     * [ADMIN] 各サイズごとの画像の存在チェックを行う
-     */
-    public function testAdmin_ajax_exists_images()
-    {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
-    }
-
-    /**
-     * [ADMIN] 編集処理
-     */
-    public function testAdmin_edit()
-    {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
-    }
-
-    /**
-     * [ADMIN] 削除処理
-     */
-    public function testAdmin_delete()
-    {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
-    }
-
-    /**
-     * 検索ボックスを取得する
-     */
-    public function testAdmin_ajax_get_search_box()
-    {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
-    }
-
-    /**
-     * 公開期間のチェックを行う
-     */
-    public function testView_limited_file()
+    public function test_delete()
     {
         $this->markTestIncomplete('このテストは、まだ実装されていません。');
     }
