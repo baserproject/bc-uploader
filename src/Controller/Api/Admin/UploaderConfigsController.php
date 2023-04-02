@@ -9,21 +9,19 @@
  * @license       https://basercms.net/license/index.html MIT License
  */
 
-namespace BcUploader\Controller\Api;
+namespace BcUploader\Controller\Api\Admin;
 
+use BaserCore\Controller\Api\Admin\BcAdminApiController;
+use BcUploader\Service\UploaderConfigsServiceInterface;
+use Cake\ORM\Exception\PersistenceFailedException;
 use BaserCore\Annotation\NoTodo;
 use BaserCore\Annotation\Checked;
 use BaserCore\Annotation\UnitTest;
-use BaserCore\Controller\Api\BcApiController;
-use BcUploader\Service\UploaderConfigsServiceInterface;
-use Cake\Datasource\Exception\RecordNotFoundException;
-use Cake\ORM\Exception\PersistenceFailedException;
-use Throwable;
 
 /**
  * アップローダープラグイン
  */
-class UploaderConfigsController extends BcApiController
+class UploaderConfigsController extends BcAdminApiController
 {
 
     /**

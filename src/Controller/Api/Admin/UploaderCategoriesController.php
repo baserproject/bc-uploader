@@ -9,20 +9,20 @@
  * @license       https://basercms.net/license/index.html MIT License
  */
 
-namespace BcUploader\Controller\Api;
+namespace BcUploader\Controller\Api\Admin;
 
-use BaserCore\Annotation\NoTodo;
-use BaserCore\Annotation\Checked;
-use BaserCore\Annotation\UnitTest;
-use BaserCore\Controller\Api\BcApiController;
+use BaserCore\Controller\Api\Admin\BcAdminApiController;
 use BcUploader\Service\UploaderCategoriesServiceInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Exception\PersistenceFailedException;
+use BaserCore\Annotation\NoTodo;
+use BaserCore\Annotation\Checked;
+use BaserCore\Annotation\UnitTest;
 
 /**
  * アップロードカテゴリコントローラー
  */
-class UploaderCategoriesController extends BcApiController
+class UploaderCategoriesController extends BcAdminApiController
 {
 
     /**
@@ -37,9 +37,13 @@ class UploaderCategoriesController extends BcApiController
     public function index(UploaderCategoriesServiceInterface $service)
     {
         $this->request->allowMethod(['get']);
+
+        $queryParams = array_merge([
+            'contain' => null,
+        ], $this->request->getQueryParams());
         $this->set([
             'uploaderCategories' => $this->paginate(
-                $service->getIndex($this->request->getQueryParams())
+                $service->getIndex($queryParams)
             )
         ]);
         $this->viewBuilder()->setOption('serialize', ['uploaderCategories']);
