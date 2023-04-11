@@ -6,8 +6,7 @@
     "license": "MIT",
     "vendor-dir": "../../vendor",
     "require": {
-        "php": ">=8.1",
-        "baserproject/baser-core": "^4.2.1"
+        "baserproject/baser-core": "^4.2.2"
     },
     "autoload": {
         "psr-4": {
