@@ -32,6 +32,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function __construct()
     {
@@ -43,6 +44,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function get(int $id)
     {
@@ -54,6 +56,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function getIndex(array $queryParams = [])
     {
@@ -68,6 +71,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function getList()
     {
@@ -79,6 +83,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function getNew()
     {
@@ -90,6 +95,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function create(array $postData)
     {
@@ -102,6 +108,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function update(EntityInterface $entity, array $postData)
     {
@@ -114,6 +121,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function delete(int $id)
     {
@@ -126,6 +134,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function copy(int $id)
     {
@@ -137,6 +146,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function batch(string $method, array $ids)
     {
@@ -161,6 +171,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      * @return array
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function getTitlesById(array $ids): array
     {
