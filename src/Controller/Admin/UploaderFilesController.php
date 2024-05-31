@@ -41,7 +41,7 @@ class UploaderFilesController extends BcAdminAppController
      */
     public function beforeFilter(EventInterface $event)
     {
-        $this->viewBuilder()->addHelpers(['BcUploader.Uploader']);
+        $this->viewBuilder()->setHelpers(['BcUploader.Uploader']);
         return parent::beforeFilter($event);
     }
 
@@ -126,6 +126,23 @@ class UploaderFilesController extends BcAdminAppController
     {
         $this->viewBuilder()->disableAutoLayout();
         $this->set($service->getViewVarsForAjaxImage($name, $size));
+    }
+
+    /**
+     * [ADMIN] 各サイズごとの画像の存在チェックを行う
+     *
+     * @param string $name
+     * @return void
+     */
+    public function ajax_exists_images(string $name)
+    {
+
+        Configure::write('debug', 0);
+        $this->RequestHandler->setContent('json');
+        $this->RequestHandler->respondAs('application/json; charset=UTF-8');
+        $files = $this->UploaderFile->filesExists($name);
+        $this->set('result', $files);
+        $this->render('json_result');
     }
 
     /**

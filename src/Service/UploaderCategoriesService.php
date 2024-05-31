@@ -17,7 +17,6 @@ use BaserCore\Annotation\UnitTest;
 use BaserCore\Error\BcException;
 use BcUploader\Model\Table\UploaderCategoriesTable;
 use Cake\Datasource\EntityInterface;
-use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 
 /**
@@ -27,12 +26,6 @@ use Cake\ORM\TableRegistry;
  */
 class UploaderCategoriesService implements UploaderCategoriesServiceInterface
 {
-
-    /**
-     * UploaderCategories Table
-     * @var UploaderCategoriesTable|Table
-     */
-    public UploaderCategoriesTable|Table $UploaderCategories;
 
     /**
      * Constructor

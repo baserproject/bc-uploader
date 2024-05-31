@@ -17,12 +17,9 @@ use BaserCore\Annotation\UnitTest;
 use BaserCore\Error\BcException;
 use BaserCore\Utility\BcContainerTrait;
 use BaserCore\Utility\BcUtil;
-use BcUploader\Model\Entity\UploaderFile;
-use BcUploader\Model\Table\UploaderFilesTable;
 use Cake\Datasource\EntityInterface;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
-use Cake\ORM\Table;
 
 /**
  * UploaderFilesService
@@ -34,18 +31,6 @@ class UploaderFilesService implements UploaderFilesServiceInterface
      * Trait
      */
     use BcContainerTrait;
-
-    /**
-     * UploaderFiles Table
-     * @var UploaderFilesTable|Table
-     */
-    public UploaderFilesTable|Table $UploaderFiles;
-
-    /**
-     * UploaderConfigs Service
-     * @var UploaderConfigsServiceInterface|UploaderConfigsService
-     */
-    public UploaderConfigsServiceInterface|UploaderConfigsService $uploaderConfigsService;
 
     /**
      * constructor.
@@ -279,22 +264,6 @@ class UploaderFilesService implements UploaderFilesServiceInterface
         return $this->UploaderFiles->newEntity([
             'user_id' => BcUtil::loginUser()->id
         ]);
-    }
-
-    /**
-     * ファイル名から実ファイルが存在するかどうかを取得する
-     * @param string $name
-     * @return array|false
-     */
-    public function filesExistsByName(string $name)
-    {
-        /** @var UploaderFile $entity */
-        $entity = $this->UploaderFiles->find()->where(['UploaderFiles.name' => $name])->first();
-        if ($entity) {
-            return $entity->filesExists();
-        } else {
-            return false;
-        }
     }
 
 }

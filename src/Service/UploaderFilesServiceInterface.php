@@ -33,11 +33,4 @@ interface UploaderFilesServiceInterface
      */
     public function getControlSource($field = null, $options = []);
 
-    /**
-     * ファイル名から実ファイルが存在するかどうかを取得する
-     * @param string $name
-     * @return array|false
-     */
-    public function filesExistsByName(string $name);
-
 }
