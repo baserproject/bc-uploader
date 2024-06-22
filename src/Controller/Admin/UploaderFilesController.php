@@ -136,6 +136,7 @@ class UploaderFilesController extends BcAdminAppController
      * @return \Cake\Http\Response|void|null
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function edit(UploaderFilesServiceInterface $service, int $id)
     {
@@ -169,6 +170,7 @@ class UploaderFilesController extends BcAdminAppController
      * @return    void
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function delete(UploaderFilesServiceInterface $service, int $id)
     {
