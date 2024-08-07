@@ -107,7 +107,6 @@ class UploaderFilesTable extends AppTable
      * @return bool
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function checkPeriod($value, $context = null)
     {
@@ -221,7 +220,6 @@ class UploaderFilesTable extends AppTable
      * @return mixed
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function getSourceFileName($fileName)
     {
@@ -236,7 +234,7 @@ class UploaderFilesTable extends AppTable
      * @checked
      * @noTodo
      */
-    public function beforeDelete(EventInterface $event, EntityInterface $entity, \ArrayObject $options)
+    public function beforeDelete(Event $event)
     {
         $entity = $event->getData('entity');
         $fileUploader = $this->getFileUploader();

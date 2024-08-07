@@ -32,7 +32,6 @@ class BcUploaderPlugin extends BcPlugin
      * @param ContainerInterface $container
      * @noTodo
      * @checked
-     * @UnitTest
      */
     public function services(ContainerInterface $container): void
     {

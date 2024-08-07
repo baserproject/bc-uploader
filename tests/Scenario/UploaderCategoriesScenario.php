@@ -25,13 +25,12 @@ class UploaderCategoriesScenario implements FixtureScenarioInterface
     /**
      * load
      */
-    public function load(...$args): mixed
+    public function load(...$args)
     {
         //アップロードカテゴリデータを生成
         UploaderCategoryFactory::make(['id' => 1, 'name' => 'blog'])->persist();
         UploaderCategoryFactory::make(['id' => 2, 'name' => 'contact'])->persist();
         UploaderCategoryFactory::make(['id' => 3, 'name' => 'service'])->persist();
-        return null;
     }
 
 }
