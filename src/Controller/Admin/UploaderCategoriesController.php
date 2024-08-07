@@ -15,7 +15,6 @@ use BaserCore\Controller\Admin\BcAdminAppController;
 use BaserCore\Annotation\NoTodo;
 use BaserCore\Annotation\Checked;
 use BaserCore\Annotation\UnitTest;
-use BaserCore\Utility\BcSiteConfig;
 use BcUploader\Service\UploaderCategoriesService;
 use BcUploader\Service\UploaderCategoriesServiceInterface;
 use Cake\ORM\Exception\PersistenceFailedException;
@@ -37,12 +36,7 @@ class UploaderCategoriesController extends BcAdminAppController
      */
     public function index(UploaderCategoriesServiceInterface $service)
     {
-        $this->setViewConditions('UploadCategory', [
-            'default' => [
-                'query' => [
-                    'limit' => BcSiteConfig::get('admin_list_num'),
-                ]]]);
-        $this->set(['uploaderCategories' => $this->paginate($service->getIndex())]);
+        $this->set(['uploaderCategories' => $service->getIndex()->all()]);
     }
 
     /**
@@ -52,7 +46,6 @@ class UploaderCategoriesController extends BcAdminAppController
      * @return void
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function add(UploaderCategoriesServiceInterface $service)
     {
@@ -137,8 +130,8 @@ class UploaderCategoriesController extends BcAdminAppController
     public function delete(UploaderCategoriesServiceInterface $service, int $id)
     {
         $this->request->allowMethod(['post', 'delete']);
+        $entity = $service->get($id);
         try {
-            $entity = $service->get($id);
             if($service->delete($id)) {
                 $this->BcMessage->setSuccess(__d('baser_core', 'アップロードカテゴリ「{0}」を削除しました。', $entity->name));
             } else {
