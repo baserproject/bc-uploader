@@ -12,7 +12,9 @@
 namespace BcUploader\Test\TestCase\Model\Table;
 
 use BaserCore\TestSuite\BcTestCase;
+use BaserCore\Utility\BcFile;
 use BcUploader\Model\Table\UploaderFilesTable;
+use BcUploader\Test\Factory\UploaderFileFactory;
 use Laminas\Diactoros\UploadedFile;
 
 /**
@@ -108,7 +110,39 @@ class UploaderFilesTableTest extends BcTestCase
      */
     public function testBeforeSave()
     {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
+        //準備
+        $file = new BcFile('/var/www/html/webroot/files/uploads/limited/2_2_test.jpg');
+        $file->create();
+        $file = new BcFile('/var/www/html/webroot/files/uploads/limited/2_2_test__small.jpg');
+        $file->create();
+        $uploaderFile = UploaderFileFactory::make(['id' => 1, 'name' => '2_2_test.jpg', 'atl' => '2_2_test.jpg', 'user_id' => 1])->persist();
+
+        // 公開状態
+        $this->UploaderFilesTable->dispatchEvent('Model.beforeSave', ['entity' => $uploaderFile, 'options' => new \ArrayObject()]);
+        $this->assertTrue(file_exists('/var/www/html/webroot/files/uploads/2_2_test.jpg'));
+        $this->assertTrue(file_exists('/var/www/html/webroot/files/uploads/2_2_test__small.jpg'));
+        $this->assertFalse(file_exists('/var/www/html/webroot/files/uploads/limited/2_2_test.jpg'));
+        $this->assertFalse(file_exists('/var/www/html/webroot/files/uploads/limited/2_2_test__small.jpg'));
+
+        // 公開制限状態
+        $uploaderFile->publish_begin = '2021-01-01 00:00:00';
+        $this->UploaderFilesTable->dispatchEvent('Model.beforeSave', ['entity' => $uploaderFile, 'options' => new \ArrayObject()]);
+        $this->assertFalse(file_exists('/var/www/html/webroot/files/uploads/2_2_test.jpg'));
+        $this->assertFalse(file_exists('/var/www/html/webroot/files/uploads/2_2_test__small.jpg'));
+        $this->assertTrue(file_exists('/var/www/html/webroot/files/uploads/limited/2_2_test.jpg'));
+        $this->assertTrue(file_exists('/var/www/html/webroot/files/uploads/limited/2_2_test__small.jpg'));
+
+        // 再度、公開状態
+        $uploaderFile->publish_begin = '';
+        $this->UploaderFilesTable->dispatchEvent('Model.beforeSave', ['entity' => $uploaderFile, 'options' => new \ArrayObject()]);
+        $this->assertTrue(file_exists('/var/www/html/webroot/files/uploads/2_2_test.jpg'));
+        $this->assertTrue(file_exists('/var/www/html/webroot/files/uploads/2_2_test__small.jpg'));
+        $this->assertFalse(file_exists('/var/www/html/webroot/files/uploads/limited/2_2_test.jpg'));
+        $this->assertFalse(file_exists('/var/www/html/webroot/files/uploads/limited/2_2_test__small.jpg'));
+
+        //不要データを削除
+        unlink('/var/www/html/webroot/files/uploads/2_2_test.jpg');
+        unlink('/var/www/html/webroot/files/uploads/2_2_test__small.jpg');
     }
 
     /**

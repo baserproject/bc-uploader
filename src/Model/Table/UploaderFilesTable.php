@@ -182,6 +182,7 @@ class UploaderFilesTable extends AppTable
      * @return bool
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options)
     {
