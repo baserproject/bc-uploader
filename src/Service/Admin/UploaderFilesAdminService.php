@@ -14,10 +14,11 @@ namespace BcUploader\Service\Admin;
 use BaserCore\Annotation\NoTodo;
 use BaserCore\Annotation\Checked;
 use BaserCore\Annotation\UnitTest;
+use BaserCore\Utility\BcFile;
+use BaserCore\Utility\BcFolder;
 use BcUploader\Model\Table\UploaderFilesTable;
 use BcUploader\Service\UploaderFilesService;
-use Cake\Filesystem\File;
-use Cake\Filesystem\Folder;
+use Cake\Datasource\Paging\PaginatedResultSet;
 use Cake\ORM\ResultSet;
 
 /**
@@ -55,7 +56,7 @@ class UploaderFilesAdminService extends UploaderFilesService implements Uploader
      * @noTodo
      * @unitTest
      */
-    public function getViewVarsForAjaxList(ResultSet $entities, int $listId = null)
+    public function getViewVarsForAjaxList(PaginatedResultSet $entities, int $listId = null)
     {
         $uploaderConfig = $this->uploaderConfigsService->get();
         return [
@@ -87,8 +88,8 @@ class UploaderFilesAdminService extends UploaderFilesService implements Uploader
         $viewLimitedPath = $viewSavePath . DS . 'limited';
 
         if (!is_dir($limitedPath)) {
-            $folder = new Folder();
-            $folder->create($limitedPath, 0777);
+            $folder = new BcFolder($limitedPath);
+            $folder->create();
             if (!is_dir($limitedPath)) {
                 if (is_writable($filesPath)) {
                     $installMessage = sprintf(__d('baser_core', '%sを作成し、書き込み権限を与えてください'), $viewSavePath);
@@ -98,10 +99,9 @@ class UploaderFilesAdminService extends UploaderFilesService implements Uploader
                     $installMessage = sprintf(__d('baser_core', '%sに書き込み権限を与えてください'), $viewFilesPath);
                 }
             } else {
-                $File = new File($limitedPath . DS . '.htaccess');
+                $File = new BcFile($limitedPath . DS . '.htaccess');
                 $htaccess = "Order allow,deny\nDeny from all";
                 $File->write($htaccess);
-                $File->close();
                 if (!file_exists($limitedPath . DS . '.htaccess')) {
                     $installMessage = __d('baser_core', '現在、アップロードファイルの公開期間の指定ができません。' .
                         '指定できるようにするには、{0} に書き込み権限を与えてください。', $viewLimitedPath);
