@@ -25,6 +25,10 @@ use Cake\ORM\TableRegistry;
 class UploaderCategoriesTableTest extends BcTestCase
 {
 
+    public $fixtures = [
+        'plugin.BcUploader.Factory/UploaderCategories',
+    ];
+
     /**
      * Set Up
      *

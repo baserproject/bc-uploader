@@ -34,7 +34,6 @@ class UploaderFilesAdminService extends UploaderFilesService implements Uploader
      * @return array
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function getViewVarsForIndex(int $id = null)
     {
@@ -53,7 +52,6 @@ class UploaderFilesAdminService extends UploaderFilesService implements Uploader
      * @return array
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function getViewVarsForAjaxList(ResultSet $entities, int $listId = null)
     {
@@ -72,7 +70,6 @@ class UploaderFilesAdminService extends UploaderFilesService implements Uploader
      * @return string インストールメッセージ
      * @checked
      * @noTodo
-     * @unitTest
      */
     protected function checkInstall()
     {
@@ -122,7 +119,6 @@ class UploaderFilesAdminService extends UploaderFilesService implements Uploader
      * @return array
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function getViewVarsForAjaxImage(string $name, string $size)
     {
