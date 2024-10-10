@@ -24,7 +24,7 @@ use Cake\Routing\RouteBuilder;
 /**
  * plugin for BcUploader
  */
-class BcUploaderPlugin extends BcPlugin
+class Plugin extends BcPlugin
 {
 
     /**
