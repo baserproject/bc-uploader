@@ -9,7 +9,7 @@
  * @license       https://basercms.net/license/index.html MIT License
  */
 
-namespace BcUploader\View\Helper;
+ namespace BcUploader\View\Helper;
 
 use BcUploader\Model\Entity\UploaderFile;
 use Cake\Event\Event;
@@ -23,25 +23,25 @@ use BaserCore\Annotation\UnitTest;
  */
 class UploaderHelper extends Helper
 {
-
     /**
      * アップロードファイルの保存URL
      *
-     * @var string
+     * @var        string
+     * @access    public
      */
     public $savedUrl = '';
-
     /**
      * アップロードファイルの保存パス
      *
-     * @var string
+     * @var        string
+     * @access    public
      */
     public $savePath = '';
-
     /**
      * ヘルパー
      *
-     * @var array
+     * @var        array
+     * @access    public
      */
     public $helpers = ['Html'];
 
@@ -49,8 +49,6 @@ class UploaderHelper extends Helper
      * Before Render
      *
      * @return void
-     * @checked
-     * @noTodo
      */
     public function beforeRender(Event $event, $viewFile)
     {
@@ -98,9 +96,8 @@ class UploaderHelper extends Helper
      * ファイルが保存されているURLを取得する
      *
      * @param string $fileName
-     * @return string
-     * @checked
-     * @noTodo
+     * @return    string
+     * @access    public
      */
     public function getFileUrl($fileName)
     {
@@ -132,12 +129,11 @@ class UploaderHelper extends Helper
      * ファイルの公開制限期間が設定されているか判定する
      *
      * @param array $data
-     * @return bool
-     * @checked
+     * @return boolean
      */
     public function isLimitSetting($data)
     {
-        // TODO エンティティに移動する
+
         if (!empty($data['UploaderFile'])) {
             $data = $data['UploaderFile'];
         }
@@ -153,8 +149,6 @@ class UploaderHelper extends Helper
      *
      * @param UploaderFile $data
      * @return boolean
-     * @checked
-     * @noTodo
      */
     public function isPublish($data)
     {
