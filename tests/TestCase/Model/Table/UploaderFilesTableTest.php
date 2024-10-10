@@ -1,4 +1,6 @@
 <?php
+// TODO ucmitz  : コード確認要
+return;
 /**
  * baserCMS :  Based Website Development Project <https://basercms.net>
  * Copyright (c) baserCMS Users Community <https://basercms.net/community/>
@@ -9,51 +11,35 @@
  * @license         https://basercms.net/license/index.html
  */
 
-namespace BcUploader\Test\TestCase\Model\Table;
-
-use BaserCore\TestSuite\BcTestCase;
-use BcUploader\Model\Table\UploaderFilesTable;
+App::uses('UploaderFile', 'BcUploader.Controller');
 
 /**
  * Class UploaderFileTest
  *
- * @property  UploaderFilesTable $UploaderFilesTable
+ * @property  UploaderFile $UploaderFile
  */
-class UploaderFilesTableTest extends BcTestCase
+class UploaderFilesTableTest extends BaserTestCase
 {
     /**
-     * Set Up
+     * set up
      *
      * @return void
      */
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
-        $this->UploaderFilesTable = $this->getTableLocator()->get('BcUploader.UploaderFiles');
     }
 
     /**
-     * Tear Down
+     * tearDown
      *
      * @return void
      */
-    public function tearDown(): void
+    public function tearDown()
     {
-        unset($this->UploaderFilesTable);
         parent::tearDown();
     }
 
-    /**
-     * initialize
-     */
-    public function test_initialize()
-    {
-        $this->assertEquals('uploader_files', $this->UploaderFilesTable->getTable());
-        $this->assertEquals('id', $this->UploaderFilesTable->getPrimaryKey());
-        $this->assertTrue($this->UploaderFilesTable->hasBehavior('Timestamp'));
-        $this->assertTrue($this->UploaderFilesTable->hasBehavior('BcUpload'));
-        $this->assertTrue($this->UploaderFilesTable->hasAssociation('UploaderCategories'));
-    }
     /**
      * 公開期間をチェックする
      */

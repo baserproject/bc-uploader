@@ -31,7 +31,6 @@ class UploaderConfigsTable extends AppTable
      * @return void
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function initialize(array $config): void
     {
