@@ -52,8 +52,6 @@ class UploadFilesAdminServiceTest extends BcTestCase
     {
         unset($this->UploaderFilesAdminService);
         parent::tearDown();
-        $this->truncateTable('uploader_categories');
-        $this->truncateTable('uploader_files');
     }
 
     /**
@@ -124,5 +122,6 @@ Deny from all', file_get_contents($limitPath . DS . '.htaccess'));
         //戻る値を確認
         $this->assertEquals('1111', $rs['size']);
         $this->assertEquals('test.jpg', $rs['uploaderFile']->name);
+        $this->assertEquals('2_3.jpg', $rs['uploaderFile']->atl);
     }
 }

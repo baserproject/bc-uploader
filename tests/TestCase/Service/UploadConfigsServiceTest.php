@@ -51,8 +51,6 @@ class UploadConfigsServiceTest extends BcTestCase
     public function tearDown(): void
     {
         parent::tearDown();
-        $this->truncateTable('uploader_files');
-        $this->truncateTable('uploader_categories');
     }
 
     /**
@@ -84,7 +82,6 @@ class UploadConfigsServiceTest extends BcTestCase
      */
     public function test_clearCache()
     {
-        $this->markTestIncomplete('こちらのテストはまだ未確認です');
         //実行前の確認
         $this->UploaderConfigsService->get();
         $entity = $this->getPrivateProperty($this->UploaderConfigsService, 'entity');
