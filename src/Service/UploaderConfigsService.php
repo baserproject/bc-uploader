@@ -46,18 +46,14 @@ class UploaderConfigsService implements UploaderConfigsServiceInterface
      * @return UploaderConfig|\Cake\Datasource\EntityInterface
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function get()
     {
         if (!$this->entity) {
-            $entity = $this->UploaderConfigs->newEntity(
+            $this->entity = $this->UploaderConfigs->newEntity(
                 $this->UploaderConfigs->getKeyValue(),
                 ['validate' => 'keyValue']
             );
-            if ($entity->toArray()) {
-                $this->entity = $entity;
-            }
         }
         return $this->entity;
     }
@@ -67,7 +63,6 @@ class UploaderConfigsService implements UploaderConfigsServiceInterface
      *
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function clearCache()
     {
@@ -81,7 +76,6 @@ class UploaderConfigsService implements UploaderConfigsServiceInterface
      * @return UploaderConfig|\Cake\Datasource\EntityInterface|false
      * @noTodo
      * @checked
-     * @unitTest
      */
     public function update(array $postData)
     {
