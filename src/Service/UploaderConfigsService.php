@@ -34,7 +34,6 @@ class UploaderConfigsService implements UploaderConfigsServiceInterface
      *
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function __construct()
     {

@@ -11,6 +11,7 @@
 
  namespace BcUploader\Model\Table;
 
+use BaserCore\Event\BcEventDispatcherTrait;
 use BaserCore\Model\Table\AppTable;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Exception\PersistenceFailedException;
@@ -25,6 +26,12 @@ use BaserCore\Annotation\Checked;
  */
 class UploaderCategoriesTable extends AppTable
 {
+
+    /**
+     * Trait
+     */
+    use BcEventDispatcherTrait;
+
     /**
      * Initialize
      *
@@ -32,7 +39,6 @@ class UploaderCategoriesTable extends AppTable
      * @return void
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function initialize(array $config): void
     {
@@ -59,7 +65,6 @@ class UploaderCategoriesTable extends AppTable
      * @param null $ds
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function validationDefault(Validator $validator): Validator
     {
@@ -80,7 +85,6 @@ class UploaderCategoriesTable extends AppTable
      * @return EntityInterface|false
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function copy($id = null, $entity = [])
     {
@@ -93,7 +97,7 @@ class UploaderCategoriesTable extends AppTable
             'id' => $id,
         ]);
         if ($event !== false) {
-            $entity = ($event->getResult() === null || $event->getResult() === true) ? $event->getData('data') : $event->getResult();
+            $entity = $event->getResult() === true ? $event->getData('data') : $event->getResult();
         }
 
         $entity->name .= '_copy';
