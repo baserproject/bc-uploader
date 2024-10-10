@@ -27,10 +27,10 @@ use Cake\ORM\TableRegistry;
  * @property string $alt
  * @property int $uploader_category_id
  * @property int $user_id
- * @property \Cake\I18n\DateTime $publish_begin
- * @property \Cake\I18n\DateTime $publish_end
- * @property \Cake\I18n\DateTime $created
- * @property \Cake\I18n\DateTime $modified
+ * @property FrozenTime $publish_begin
+ * @property FrozenTime $publish_end
+ * @property FrozenTime $created
+ * @property FrozenTime $modified
  */
 class UploaderFile extends Entity
 {
@@ -40,7 +40,7 @@ class UploaderFile extends Entity
      *
      * @var array
      */
-    protected array $_accessible = [
+    protected $_accessible = [
         '*' => true,
         'id' => false
     ];
@@ -51,7 +51,6 @@ class UploaderFile extends Entity
      * @return array
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function filesExists()
     {
@@ -68,7 +67,6 @@ class UploaderFile extends Entity
      * @return bool
      * @checked
      * @noTodo
-     * @unitTest
      */
     protected function _getSmall()
     {
@@ -81,7 +79,6 @@ class UploaderFile extends Entity
      * @return bool
      * @checked
      * @noTodo
-     * @unitTest
      */
     protected function _getMidium()
     {
@@ -94,7 +91,6 @@ class UploaderFile extends Entity
      * @return bool
      * @checked
      * @noTodo
-     * @unitTest
      */
     protected function _getLarge()
     {
@@ -108,7 +104,6 @@ class UploaderFile extends Entity
      * @return string
      * @checked
      * @noTodo
-     * @unitTest
      */
     private function getFileNameBySize(string $size): string
     {
@@ -125,7 +120,6 @@ class UploaderFile extends Entity
      * @return bool
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function fileExists($fileName)
     {
@@ -145,7 +139,6 @@ class UploaderFile extends Entity
      * @return bool
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function isLimited()
     {

@@ -34,7 +34,7 @@ class BcUploaderServiceProvider extends ServiceProvider
      * Provides
      * @var string[]
      */
-    protected array $provides = [
+    protected $provides = [
         UploaderCategoriesServiceInterface::class,
         UploaderConfigsServiceInterface::class,
         UploaderFilesServiceInterface::class,
@@ -46,7 +46,6 @@ class BcUploaderServiceProvider extends ServiceProvider
      * @param \Cake\Core\ContainerInterface $container
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function services($container): void
     {
