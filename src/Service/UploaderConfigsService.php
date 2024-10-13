@@ -15,7 +15,9 @@ use BaserCore\Annotation\NoTodo;
 use BaserCore\Annotation\Checked;
 use BaserCore\Annotation\UnitTest;
 use BcUploader\Model\Entity\UploaderConfig;
+use BcUploader\Model\Table\UploaderConfigsTable;
 use Cake\ORM\TableRegistry;
+use Cake\ORM\Table;
 
 /**
  * UploaderConfigsService
@@ -30,10 +32,17 @@ class UploaderConfigsService implements UploaderConfigsServiceInterface
     protected $entity;
 
     /**
+     * UploaderConfigs Table
+     * @var UploaderConfigsTable|Table
+     */
+    public UploaderConfigsTable|Table $UploaderConfigs;
+
+    /**
      * constructor.
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function __construct()
     {
@@ -45,14 +54,18 @@ class UploaderConfigsService implements UploaderConfigsServiceInterface
      * @return UploaderConfig|\Cake\Datasource\EntityInterface
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function get()
     {
         if (!$this->entity) {
-            $this->entity = $this->UploaderConfigs->newEntity(
+            $entity = $this->UploaderConfigs->newEntity(
                 $this->UploaderConfigs->getKeyValue(),
                 ['validate' => 'keyValue']
             );
+            if ($entity->toArray()) {
+                $this->entity = $entity;
+            }
         }
         return $this->entity;
     }
@@ -75,6 +88,7 @@ class UploaderConfigsService implements UploaderConfigsServiceInterface
      * @return UploaderConfig|\Cake\Datasource\EntityInterface|false
      * @noTodo
      * @checked
+     * @unitTest
      */
     public function update(array $postData)
     {

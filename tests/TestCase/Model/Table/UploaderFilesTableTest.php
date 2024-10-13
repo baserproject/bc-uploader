@@ -1,6 +1,4 @@
 <?php
-// TODO ucmitz  : コード確認要
-return;
 /**
  * baserCMS :  Based Website Development Project <https://basercms.net>
  * Copyright (c) baserCMS Users Community <https://basercms.net/community/>
@@ -11,43 +9,74 @@ return;
  * @license         https://basercms.net/license/index.html
  */
 
-App::uses('UploaderFile', 'BcUploader.Controller');
+namespace BcUploader\Test\TestCase\Model\Table;
+
+use BaserCore\TestSuite\BcTestCase;
+use BcUploader\Model\Table\UploaderFilesTable;
 
 /**
  * Class UploaderFileTest
  *
- * @property  UploaderFile $UploaderFile
+ * @property  UploaderFilesTable $UploaderFilesTable
  */
-class UploaderFilesTableTest extends BaserTestCase
+class UploaderFilesTableTest extends BcTestCase
 {
     /**
-     * set up
+     * Set Up
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
+        $this->UploaderFilesTable = $this->getTableLocator()->get('BcUploader.UploaderFiles');
     }
 
     /**
-     * tearDown
+     * Tear Down
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
+        unset($this->UploaderFilesTable);
         parent::tearDown();
     }
 
     /**
-     * 公開期間をチェックする
+     * initialize
      */
-    public function testCheckPeriod()
+    public function test_initialize()
     {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
+        $this->assertEquals('uploader_files', $this->UploaderFilesTable->getTable());
+        $this->assertEquals('id', $this->UploaderFilesTable->getPrimaryKey());
+        $this->assertTrue($this->UploaderFilesTable->hasBehavior('Timestamp'));
+        $this->assertTrue($this->UploaderFilesTable->hasBehavior('BcUpload'));
+        $this->assertTrue($this->UploaderFilesTable->hasAssociation('UploaderCategories'));
+    }
+    /**
+     * 公開期間をチェックする
+     * @dataProvider periodDataProvider
+     */
+    public function testCheckPeriod($publishBegin, $publishEnd, $expected)
+    {
+        $context = [
+            'data' => [
+                'publish_begin' => $publishBegin,
+                'publish_end' => $publishEnd,
+            ]
+        ];
+        $rs = $this->UploaderFilesTable->checkPeriod(null, $context);
+        $this->assertEquals($expected, $rs);
     }
 
+    public static function periodDataProvider()
+    {
+        return [
+            ['2021-01-01 00:00:00', '2021-01-02 00:00:00', true],
+            ['2021-01-02 00:00:00', '2021-01-01 00:00:00', false],
+        ];
+    }
     /**
      * Before Save
      */
@@ -74,11 +103,24 @@ class UploaderFilesTableTest extends BaserTestCase
 
     /**
      * ソースファイルの名称を取得する
+     * @dataProvider getSourceFileNameDataProvider
      */
-    public function testGetSourceFileName()
+    public function testGetSourceFileName($fileName, $expected)
     {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
+        $this->assertEquals($expected, $this->UploaderFilesTable->getSourceFileName($fileName));
     }
+
+    public static function getSourceFileNameDataProvider()
+    {
+        return [
+            ['example__large.jpg', 'example.jpg'],
+            ['example__midium.png', 'example.png'],
+            ['example__small.jpg', 'example.jpg'],
+            ['example__mobile_large.jpg', 'example.jpg'],
+            ['example__mobile_small.git', 'example.git'],
+        ];
+    }
+
 
     /**
      * Before Delete

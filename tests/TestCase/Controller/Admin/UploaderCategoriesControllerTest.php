@@ -33,28 +33,10 @@ class UploaderCategoriesControllerTest extends BcTestCase
     use IntegrationTestTrait;
 
     /**
-     * Fixtures
-     *
-     * @var array
-     */
-    public $fixtures = [
-        'plugin.BaserCore.Factory/Sites',
-        'plugin.BaserCore.Factory/SiteConfigs',
-        'plugin.BaserCore.Factory/Users',
-        'plugin.BaserCore.Factory/UsersUserGroups',
-        'plugin.BaserCore.Factory/UserGroups',
-        'plugin.BcUploader.Factory/UploaderFiles',
-        'plugin.BcUploader.Factory/UploaderCategories',
-        'plugin.BcUploader.Factory/UploaderConfigs',
-        'plugin.BaserCore.Factory/Dblogs',
-    ];
-
-    /**
      * set up
      */
     public function setUp(): void
     {
-        $this->setFixtureTruncate();
         parent::setUp();
         ConnectionManager::alias('test', 'default');
         $this->loadFixtureScenario(InitAppScenario::class);
@@ -70,6 +52,20 @@ class UploaderCategoriesControllerTest extends BcTestCase
     public function tearDown(): void
     {
         parent::tearDown();
+        $this->truncateTable('uploader_categories');
+        $this->truncateTable('uploader_files');
+    }
+
+    /**
+     * test index
+     */
+    public function test_index()
+    {
+        $this->enableSecurityToken();
+        $this->enableCsrfToken();
+
+        $this->get('/baser/admin/bc-uploader/uploader_categories/index');
+        $this->assertResponseOk();
     }
 
     /**
@@ -158,5 +154,92 @@ class UploaderCategoriesControllerTest extends BcTestCase
         $uploaderCategories = $this->getTableLocator()->get('BcUploader.UploaderCategories');
         $query = $uploaderCategories->find()->where(['name' => 'afterAdd']);
         $this->assertEquals(1, $query->count());
+    }
+
+    /**
+     * test add
+     */
+    public function test_add()
+    {
+        $this->enableSecurityToken();
+        $this->enableCsrfToken();
+
+        //正常系実行
+        $this->post('/baser/admin/bc-uploader/uploader_categories/add', ['name' => 'japan']);
+        $this->assertResponseCode(302);
+        $this->assertFlashMessage('アップロードカテゴリ「japan」を追加しました。');
+        $this->assertRedirect('/baser/admin/bc-uploader/uploader_categories/index');
+
+        //異常系実行
+        $this->post('/baser/admin/bc-uploader/uploader_categories/add', ['name' => '']);
+        $this->assertResponseCode(200);
+        $errors = $this->_controller->viewBuilder()->getVars()['uploaderCategory']->getErrors();
+        $this->assertEquals(['_empty' => 'カテゴリ名を入力してください。'], $errors['name']);
+    }
+
+    /**
+     * test edit
+     *
+     */
+    public function test_edit()
+    {
+        $this->loadFixtureScenario(UploaderCategoriesScenario::class);
+
+        $this->enableSecurityToken();
+        $this->enableCsrfToken();
+
+        //正常系実行
+        $this->post('/baser/admin/bc-uploader/uploader_categories/edit/1', ['name' => 'japan']);
+        $this->assertResponseCode(302);
+        $this->assertFlashMessage('アップロードカテゴリ「japan」を更新しました。');
+        $this->assertRedirect('/baser/admin/bc-uploader/uploader_categories/index');
+
+        //異常系実行
+        $this->post('/baser/admin/bc-uploader/uploader_categories/edit/1', ['name' => null]);
+        $this->assertResponseCode(200);
+        $errors = $this->_controller->viewBuilder()->getVars()['uploaderCategory']->getErrors();
+        $this->assertEquals(['_empty' => 'カテゴリ名を入力してください。'], $errors['name']);
+    }
+
+
+    /**
+     * test delete
+     */
+    public function test_delete()
+    {
+        $this->enableSecurityToken();
+        $this->enableCsrfToken();
+        $this->loadFixtureScenario(UploaderCategoriesScenario::class);
+
+        //正常系実行
+        $this->post('/baser/admin/bc-uploader/uploader_categories/delete/1');
+        $this->assertResponseCode(302);
+        $this->assertFlashMessage('アップロードカテゴリ「blog」を削除しました。');
+
+        //異常系実行
+        $this->post('/baser/admin/bc-uploader/uploader_categories/delete/10');
+        $this->assertResponseCode(302);
+        $this->assertFlashMessage('データベース処理中にエラーが発生しました。Record not found in table `uploader_categories`.');
+        $this->assertRedirect('/baser/admin/bc-uploader/uploader_categories/index');
+    }
+
+    /**
+     * Test coppy
+     */
+    public function test_copy(){
+        $this->enableSecurityToken();
+        $this->enableCsrfToken();
+
+        $this->loadFixtureScenario(UploaderCategoriesScenario::class);
+
+        //正常系実行
+        $this->post('/baser/admin/bc-uploader/uploader_categories/copy/1');
+        $this->assertResponseCode(302);
+        $this->assertFlashMessage('アップロードカテゴリ「blog」をコピーしました。');
+
+        //異常系実行
+        $this->post('/baser/admin/bc-uploader/uploader_categories/copy/10');
+        $this->assertResponseCode(302);
+        $this->assertFlashMessage('データベース処理中にエラーが発生しました。__clone method called on non-object');
     }
 }

@@ -9,7 +9,7 @@
  * @license       https://basercms.net/license/index.html MIT License
  */
 
- namespace BcUploader\View\Helper;
+namespace BcUploader\View\Helper;
 
 use BcUploader\Model\Entity\UploaderFile;
 use Cake\Event\Event;
@@ -23,32 +23,35 @@ use BaserCore\Annotation\UnitTest;
  */
 class UploaderHelper extends Helper
 {
+
     /**
      * アップロードファイルの保存URL
      *
-     * @var        string
-     * @access    public
+     * @var string
      */
     public $savedUrl = '';
+
     /**
      * アップロードファイルの保存パス
      *
-     * @var        string
-     * @access    public
+     * @var string
      */
     public $savePath = '';
+
     /**
      * ヘルパー
      *
-     * @var        array
-     * @access    public
+     * @var array
      */
-    public $helpers = ['Html'];
+    public array $helpers = ['Html'];
 
     /**
      * Before Render
      *
      * @return void
+     * @checked
+     * @noTodo
+     * @unitTest
      */
     public function beforeRender(Event $event, $viewFile)
     {
@@ -64,6 +67,7 @@ class UploaderHelper extends Helper
      * @return string imgタグ
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function file(UploaderFile $uploaderFile, array $options = [])
     {
@@ -96,8 +100,10 @@ class UploaderHelper extends Helper
      * ファイルが保存されているURLを取得する
      *
      * @param string $fileName
-     * @return    string
-     * @access    public
+     * @return string
+     * @checked
+     * @noTodo
+     * @unitTest
      */
     public function getFileUrl($fileName)
     {
@@ -117,6 +123,7 @@ class UploaderHelper extends Helper
      * @return string
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function download(UploaderFile $uploaderFile, $linkText = '≫ ダウンロード')
     {
@@ -129,11 +136,13 @@ class UploaderHelper extends Helper
      * ファイルの公開制限期間が設定されているか判定する
      *
      * @param array $data
-     * @return boolean
+     * @return bool
+     * @checked
+     * @unitTest
      */
     public function isLimitSetting($data)
     {
-
+        // TODO エンティティに移動する
         if (!empty($data['UploaderFile'])) {
             $data = $data['UploaderFile'];
         }
@@ -149,6 +158,8 @@ class UploaderHelper extends Helper
      *
      * @param UploaderFile $data
      * @return boolean
+     * @checked
+     * @noTodo
      */
     public function isPublish($data)
     {

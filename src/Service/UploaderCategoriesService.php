@@ -17,6 +17,7 @@ use BaserCore\Annotation\UnitTest;
 use BaserCore\Error\BcException;
 use BcUploader\Model\Table\UploaderCategoriesTable;
 use Cake\Datasource\EntityInterface;
+use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 
 /**
@@ -28,10 +29,17 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
 {
 
     /**
+     * UploaderCategories Table
+     * @var UploaderCategoriesTable|Table
+     */
+    public UploaderCategoriesTable|Table $UploaderCategories;
+
+    /**
      * Constructor
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function __construct()
     {
@@ -43,6 +51,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function get(int $id)
     {
@@ -54,12 +63,15 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function getIndex(array $queryParams = [])
     {
         $options = array_merge([
             'contain' => ['UploaderFiles']
         ], $queryParams);
+        if (is_null($options['contain']))
+            $options['contain'] = [];
         return $this->UploaderCategories->find()->contain($options['contain']);
     }
 
@@ -68,6 +80,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function getList()
     {
@@ -79,6 +92,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function getNew()
     {
@@ -90,6 +104,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function create(array $postData)
     {
@@ -102,6 +117,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function update(EntityInterface $entity, array $postData)
     {
@@ -114,6 +130,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function delete(int $id)
     {
@@ -126,6 +143,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function copy(int $id)
     {
@@ -137,6 +155,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function batch(string $method, array $ids)
     {
@@ -161,6 +180,7 @@ class UploaderCategoriesService implements UploaderCategoriesServiceInterface
      * @return array
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function getTitlesById(array $ids): array
     {

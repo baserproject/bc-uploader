@@ -45,6 +45,7 @@ class UploaderFilesTable extends AppTable
      * @return void
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function initialize(array $config): void
     {
@@ -61,6 +62,11 @@ class UploaderFilesTable extends AppTable
         $this->setupUploadBehavior();
     }
 
+    /**
+     * BcUploadBehavior を設定する
+     * @return void
+     * @checked
+     */
     public function setupUploadBehavior()
     {
         /** @var UploaderConfigsService $uploaderConfigsService */
@@ -68,7 +74,7 @@ class UploaderFilesTable extends AppTable
         $uploaderConfig = $uploaderConfigsService->get();
         $sizes = ['large', 'midium', 'small', 'mobile_large', 'mobile_small'];
         $imagecopy = [];
-        foreach ($sizes as $size) {
+        foreach($sizes as $size) {
             if (!isset($uploaderConfig->{$size . '_width'}) || !isset($uploaderConfig->{$size . '_height'})) {
                 continue;
             }
@@ -99,6 +105,9 @@ class UploaderFilesTable extends AppTable
      * 公開期間をチェックする
      *
      * @return bool
+     * @checked
+     * @noTodo
+     * @unitTest
      */
     public function checkPeriod($value, $context = null)
     {
@@ -170,6 +179,8 @@ class UploaderFilesTable extends AppTable
      *
      * @param array $options
      * @return bool
+     * @checked
+     * @noTodo
      */
     public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options)
     {
@@ -182,7 +193,7 @@ class UploaderFilesTable extends AppTable
                 if (file_exists($savePath . $entity->name)) {
                     rename($savePath . $entity->name, $savePath . 'limited' . DS . $entity->name);
                 }
-                foreach ($sizes as $size) {
+                foreach($sizes as $size) {
                     $file = $pathinfo['filename'] . '__' . $size . '.' . $pathinfo['extension'];
                     if (file_exists($savePath . $file)) {
                         rename($savePath . $file, $savePath . 'limited' . DS . $file);
@@ -192,7 +203,7 @@ class UploaderFilesTable extends AppTable
                 if (file_exists($savePath . 'limited' . DS . $entity->name)) {
                     rename($savePath . 'limited' . DS . $entity->name, $savePath . $entity->name);
                 }
-                foreach ($sizes as $size) {
+                foreach($sizes as $size) {
                     $file = $pathinfo['filename'] . '__' . $size . '.' . $pathinfo['extension'];
                     if (file_exists($savePath . 'limited' . DS . $file)) {
                         rename($savePath . 'limited' . DS . $file, $savePath . $file);
@@ -208,6 +219,9 @@ class UploaderFilesTable extends AppTable
      * ソースファイルの名称を取得する
      * @param $fileName
      * @return mixed
+     * @checked
+     * @noTodo
+     * @unitTest
      */
     public function getSourceFileName($fileName)
     {
@@ -222,7 +236,7 @@ class UploaderFilesTable extends AppTable
      * @checked
      * @noTodo
      */
-    public function beforeDelete(Event $event)
+    public function beforeDelete(EventInterface $event, EntityInterface $entity, \ArrayObject $options)
     {
         $entity = $event->getData('entity');
         $fileUploader = $this->getFileUploader();
@@ -232,4 +246,5 @@ class UploaderFilesTable extends AppTable
             $fileUploader->savePath = preg_replace('/' . preg_quote('limited' . DS, '/') . '$/', '', $fileUploader->savePath);
         }
     }
+
 }

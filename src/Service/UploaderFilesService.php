@@ -17,9 +17,12 @@ use BaserCore\Annotation\UnitTest;
 use BaserCore\Error\BcException;
 use BaserCore\Utility\BcContainerTrait;
 use BaserCore\Utility\BcUtil;
+use BcUploader\Model\Entity\UploaderFile;
+use BcUploader\Model\Table\UploaderFilesTable;
 use Cake\Datasource\EntityInterface;
-use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
+use Laminas\Diactoros\UploadedFile;
+use Cake\ORM\Table;
 
 /**
  * UploaderFilesService
@@ -33,10 +36,23 @@ class UploaderFilesService implements UploaderFilesServiceInterface
     use BcContainerTrait;
 
     /**
+     * UploaderFiles Table
+     * @var UploaderFilesTable|Table
+     */
+    public UploaderFilesTable|Table $UploaderFiles;
+
+    /**
+     * UploaderConfigs Service
+     * @var UploaderConfigsServiceInterface|UploaderConfigsService
+     */
+    public UploaderConfigsServiceInterface|UploaderConfigsService $uploaderConfigsService;
+
+    /**
      * constructor.
      *
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function __construct()
     {
@@ -51,6 +67,7 @@ class UploaderFilesService implements UploaderFilesServiceInterface
      * @return \Cake\ORM\Query
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function getIndex(array $queryParams = [])
     {
@@ -76,6 +93,7 @@ class UploaderFilesService implements UploaderFilesServiceInterface
      * @return array
      * @checked
      * @noTodo
+     * @unitTest
      */
     protected function createAdminIndexConditions(array $params)
     {
@@ -125,6 +143,7 @@ class UploaderFilesService implements UploaderFilesServiceInterface
      * @return array|false コントロールソース
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function getControlSource($field = null, $options = [])
     {
@@ -134,7 +153,7 @@ class UploaderFilesService implements UploaderFilesServiceInterface
                 return $usersTable->getUserList($options);
             case 'uploader_category_id':
                 $uploaderCategoriesTable = TableRegistry::getTableLocator()->get('BcUploader.UploaderCategories');
-                return $uploaderCategoriesTable->find('list')->order(['UploaderCategories.id'])->toArray();
+                return $uploaderCategoriesTable->find('list')->orderBy(['UploaderCategories.id'])->toArray();
         }
         return false;
     }
@@ -146,6 +165,7 @@ class UploaderFilesService implements UploaderFilesServiceInterface
      * @return EntityInterface
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function get(int $id)
     {
@@ -159,6 +179,7 @@ class UploaderFilesService implements UploaderFilesServiceInterface
      * @return bool
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function delete(int $id): bool
     {
@@ -185,16 +206,18 @@ class UploaderFilesService implements UploaderFilesServiceInterface
                 ini_get('post_max_size')
             ));
         }
-        if (!empty($postData['publish_begin'])) $postData['publish_begin'] = new FrozenTime($postData['publish_begin']);
-        if (!empty($postData['publish_end'])) $postData['publish_end'] = new FrozenTime($postData['publish_end']);
+        if (!empty($postData['publish_begin'])) $postData['publish_begin'] = new \Cake\I18n\DateTime($postData['publish_begin']);
+        if (!empty($postData['publish_end'])) $postData['publish_end'] = new \Cake\I18n\DateTime($postData['publish_end']);
 
         if (!isset($postData['file'])){
             throw new BcException(__d('baser_core', 'ファイルが存在しません。'));
         }
-
-        $postData['file']['name'] = str_replace(['/', '&', '?', '=', '#', ':', '%', '+'], '_', h($postData['file']['name']));
-        $postData['name'] = $postData['file'];
-        $postData['alt'] = $postData['name']['name'];
+        /** @var UploadedFile $file */
+        $file = $postData['file'];
+        $name = $file->getClientFilename();
+        $name = str_replace(['/', '&', '?', '=', '#', ':', '%', '+'], '_', h($name));
+        $postData['name'] = new UploadedFile($file->getStream(), $file->getSize(), $file->getError(), $name, $file->getClientMediaType());
+        $postData['alt'] = $name;
         $entity = $this->UploaderFiles->patchEntity($this->getNew(), $postData);
         return $this->UploaderFiles->saveOrFail($entity);
     }
@@ -207,6 +230,7 @@ class UploaderFilesService implements UploaderFilesServiceInterface
      * @return EntityInterface
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function update(EntityInterface $entity, array $postData)
     {
@@ -214,10 +238,10 @@ class UploaderFilesService implements UploaderFilesServiceInterface
             throw new BcException(__d('baser_core', 'ファイルの変更権限がありません。' ));
         }
         if (!empty($postData['publish_begin'])) {
-            $postData['publish_begin'] = new FrozenTime($postData['publish_begin']);
+            $postData['publish_begin'] = new \Cake\I18n\DateTime($postData['publish_begin']);
         }
         if (!empty($postData['publish_end'])) {
-            $postData['publish_end'] = new FrozenTime($postData['publish_end']);
+            $postData['publish_end'] = new \Cake\I18n\DateTime($postData['publish_end']);
         }
         $entity = $this->UploaderFiles->patchEntity($entity, $postData);
         return $this->UploaderFiles->saveOrFail($entity);
@@ -234,7 +258,9 @@ class UploaderFilesService implements UploaderFilesServiceInterface
     public function isEditable(array $postData)
     {
         if(!$this->uploaderConfigsService->get()->use_permission) return true;
+        if(!isset($postData['user_id'])) return false;
         $user = BcUtil::loginUser();
+        if(!$user) return false;
         if (!BcUtil::isAdminUser($user) && $postData['user_id'] !== $user->id) {
             return false;
         }
@@ -247,12 +273,29 @@ class UploaderFilesService implements UploaderFilesServiceInterface
      * @return \Cake\Datasource\EntityInterface
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function getNew()
     {
         return $this->UploaderFiles->newEntity([
             'user_id' => BcUtil::loginUser()->id
         ]);
+    }
+
+    /**
+     * ファイル名から実ファイルが存在するかどうかを取得する
+     * @param string $name
+     * @return array|false
+     */
+    public function filesExistsByName(string $name)
+    {
+        /** @var UploaderFile $entity */
+        $entity = $this->UploaderFiles->find()->where(['UploaderFiles.name' => $name])->first();
+        if ($entity) {
+            return $entity->filesExists();
+        } else {
+            return false;
+        }
     }
 
 }

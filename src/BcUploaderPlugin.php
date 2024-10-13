@@ -19,39 +19,20 @@ use BaserCore\Annotation\Checked;
 use BcUploader\ServiceProvider\BcUploaderServiceProvider;
 use Cake\Core\ContainerInterface;
 use Cake\Routing\Route\InflectedRoute;
+use Cake\Routing\RouteBuilder;
 
 /**
  * plugin for BcUploader
  */
-class Plugin extends BcPlugin
+class BcUploaderPlugin extends BcPlugin
 {
-    /**
-     * プラグインをインストールする
-     *
-     * @param array $options
-     *  - `plugin` : プラグイン名
-     *  - `connection` : コネクション名
-     */
-    public function install($options = []) : bool
-    {
-        // ここに必要なインストール処理を記述
-        return parent::install($options);
-    }
-
-    /**
-     * プラグインをアンインストールする
-     */
-    public function uninstall($options = []): bool
-    {
-        // ここに必要なアンインストール処理を記述
-        return parent::uninstall($options);
-    }
 
     /**
      * services
      * @param ContainerInterface $container
      * @noTodo
      * @checked
+     * @UnitTest
      */
     public function services(ContainerInterface $container): void
     {
@@ -60,8 +41,11 @@ class Plugin extends BcPlugin
 
     /**
      * Routes
+     * @param RouteBuilder $routes
+     * @checked
+     * @noTodo
      */
-    public function routes($routes): void
+    public function routes(RouteBuilder $routes): void
     {
         $routes->connect('/files/uploads/*', [
             'plugin' => 'BcUploader',
