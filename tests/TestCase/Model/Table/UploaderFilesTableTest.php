@@ -12,7 +12,10 @@
 namespace BcUploader\Test\TestCase\Model\Table;
 
 use BaserCore\TestSuite\BcTestCase;
+use BaserCore\Utility\BcFile;
 use BcUploader\Model\Table\UploaderFilesTable;
+use BcUploader\Test\Factory\UploaderFileFactory;
+use Laminas\Diactoros\UploadedFile;
 
 /**
  * Class UploaderFileTest
@@ -54,20 +57,92 @@ class UploaderFilesTableTest extends BcTestCase
         $this->assertTrue($this->UploaderFilesTable->hasBehavior('BcUpload'));
         $this->assertTrue($this->UploaderFilesTable->hasAssociation('UploaderCategories'));
     }
+
     /**
-     * 公開期間をチェックする
+     * test validationDefault
+     * @return void
      */
-    public function testCheckPeriod()
+    public function testValidationDefault()
     {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
+        $blogCategory = $this->UploaderFilesTable->newEntity(["name" => 'test', "publish_begin" => "2021-01-27 12:00:00", "publish_end" => "2021-01-01 00:00:00"]);
+
+        $errors = $blogCategory->getErrors();
+        $this->assertEquals('公開期間が不正です。', current($errors['publish_begin']));
+        $this->assertEquals('公開期間が不正です。', current($errors['publish_end']));
+        $this->assertEquals('許可されていないファイルです。', current($errors['name']));
+
+        $blogCategory = $this->UploaderFilesTable->newEntity(["name" => new UploadedFile(
+            "test.png",
+            10,
+            UPLOAD_ERR_INI_SIZE,
+            'test.png',
+            "image/png")
+        ]);
+        $errors = $blogCategory->getErrors();
+        $this->assertEquals('ファイルのアップロード制限を超えています。', current($errors['name']));
     }
 
+    /**
+     * 公開期間をチェックする
+     * @dataProvider periodDataProvider
+     */
+    public function testCheckPeriod($publishBegin, $publishEnd, $expected)
+    {
+        $context = [
+            'data' => [
+                'publish_begin' => $publishBegin,
+                'publish_end' => $publishEnd,
+            ]
+        ];
+        $rs = $this->UploaderFilesTable->checkPeriod(null, $context);
+        $this->assertEquals($expected, $rs);
+    }
+
+    public static function periodDataProvider()
+    {
+        return [
+            ['2021-01-01 00:00:00', '2021-01-02 00:00:00', true],
+            ['2021-01-02 00:00:00', '2021-01-01 00:00:00', false],
+        ];
+    }
     /**
      * Before Save
      */
     public function testBeforeSave()
     {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
+        //準備
+        $file = new BcFile('/var/www/html/webroot/files/uploads/limited/2_2_test.jpg');
+        $file->create();
+        $file = new BcFile('/var/www/html/webroot/files/uploads/limited/2_2_test__small.jpg');
+        $file->create();
+        $uploaderFile = UploaderFileFactory::make(['id' => 1, 'name' => '2_2_test.jpg', 'atl' => '2_2_test.jpg', 'user_id' => 1])->persist();
+
+        // 公開状態
+        $this->UploaderFilesTable->dispatchEvent('Model.beforeSave', ['entity' => $uploaderFile, 'options' => new \ArrayObject()]);
+        $this->assertTrue(file_exists('/var/www/html/webroot/files/uploads/2_2_test.jpg'));
+        $this->assertTrue(file_exists('/var/www/html/webroot/files/uploads/2_2_test__small.jpg'));
+        $this->assertFalse(file_exists('/var/www/html/webroot/files/uploads/limited/2_2_test.jpg'));
+        $this->assertFalse(file_exists('/var/www/html/webroot/files/uploads/limited/2_2_test__small.jpg'));
+
+        // 公開制限状態
+        $uploaderFile->publish_begin = '2021-01-01 00:00:00';
+        $this->UploaderFilesTable->dispatchEvent('Model.beforeSave', ['entity' => $uploaderFile, 'options' => new \ArrayObject()]);
+        $this->assertFalse(file_exists('/var/www/html/webroot/files/uploads/2_2_test.jpg'));
+        $this->assertFalse(file_exists('/var/www/html/webroot/files/uploads/2_2_test__small.jpg'));
+        $this->assertTrue(file_exists('/var/www/html/webroot/files/uploads/limited/2_2_test.jpg'));
+        $this->assertTrue(file_exists('/var/www/html/webroot/files/uploads/limited/2_2_test__small.jpg'));
+
+        // 再度、公開状態
+        $uploaderFile->publish_begin = '';
+        $this->UploaderFilesTable->dispatchEvent('Model.beforeSave', ['entity' => $uploaderFile, 'options' => new \ArrayObject()]);
+        $this->assertTrue(file_exists('/var/www/html/webroot/files/uploads/2_2_test.jpg'));
+        $this->assertTrue(file_exists('/var/www/html/webroot/files/uploads/2_2_test__small.jpg'));
+        $this->assertFalse(file_exists('/var/www/html/webroot/files/uploads/limited/2_2_test.jpg'));
+        $this->assertFalse(file_exists('/var/www/html/webroot/files/uploads/limited/2_2_test__small.jpg'));
+
+        //不要データを削除
+        unlink('/var/www/html/webroot/files/uploads/2_2_test.jpg');
+        unlink('/var/www/html/webroot/files/uploads/2_2_test__small.jpg');
     }
 
     /**
@@ -88,11 +163,24 @@ class UploaderFilesTableTest extends BcTestCase
 
     /**
      * ソースファイルの名称を取得する
+     * @dataProvider getSourceFileNameDataProvider
      */
-    public function testGetSourceFileName()
+    public function testGetSourceFileName($fileName, $expected)
     {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
+        $this->assertEquals($expected, $this->UploaderFilesTable->getSourceFileName($fileName));
     }
+
+    public static function getSourceFileNameDataProvider()
+    {
+        return [
+            ['example__large.jpg', 'example.jpg'],
+            ['example__midium.png', 'example.png'],
+            ['example__small.jpg', 'example.jpg'],
+            ['example__mobile_large.jpg', 'example.jpg'],
+            ['example__mobile_small.git', 'example.git'],
+        ];
+    }
+
 
     /**
      * Before Delete

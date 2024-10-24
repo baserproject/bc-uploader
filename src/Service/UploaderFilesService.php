@@ -20,8 +20,8 @@ use BaserCore\Utility\BcUtil;
 use BcUploader\Model\Entity\UploaderFile;
 use BcUploader\Model\Table\UploaderFilesTable;
 use Cake\Datasource\EntityInterface;
-use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
+use Laminas\Diactoros\UploadedFile;
 use Cake\ORM\Table;
 
 /**
@@ -128,7 +128,7 @@ class UploaderFilesService implements UploaderFilesServiceInterface
         }
         // 管理ユーザ以外が利用時、ユーザ制限がOnになっていれば一覧に表示しない
         $uploaderConfig = $this->uploaderConfigsService->get();
-        if ($uploaderConfig->use_permission && !BcUtil::isAdminUser()) {
+        if ($uploaderConfig != null && $uploaderConfig->use_permission && !BcUtil::isAdminUser()) {
             $user = BcUtil::loginUser();
             if ($user) $conditions['UploaderFiles.user_id'] = $user->id;
         }
@@ -153,7 +153,7 @@ class UploaderFilesService implements UploaderFilesServiceInterface
                 return $usersTable->getUserList($options);
             case 'uploader_category_id':
                 $uploaderCategoriesTable = TableRegistry::getTableLocator()->get('BcUploader.UploaderCategories');
-                return $uploaderCategoriesTable->find('list')->order(['UploaderCategories.id'])->toArray();
+                return $uploaderCategoriesTable->find('list')->orderBy(['UploaderCategories.id'])->toArray();
         }
         return false;
     }
@@ -197,7 +197,6 @@ class UploaderFilesService implements UploaderFilesServiceInterface
      * @return \Cake\Datasource\EntityInterface
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function create(array $postData)
     {
@@ -207,16 +206,18 @@ class UploaderFilesService implements UploaderFilesServiceInterface
                 ini_get('post_max_size')
             ));
         }
-        if (!empty($postData['publish_begin'])) $postData['publish_begin'] = new FrozenTime($postData['publish_begin']);
-        if (!empty($postData['publish_end'])) $postData['publish_end'] = new FrozenTime($postData['publish_end']);
+        if (!empty($postData['publish_begin'])) $postData['publish_begin'] = new \Cake\I18n\DateTime($postData['publish_begin']);
+        if (!empty($postData['publish_end'])) $postData['publish_end'] = new \Cake\I18n\DateTime($postData['publish_end']);
 
         if (!isset($postData['file'])){
             throw new BcException(__d('baser_core', 'ファイルが存在しません。'));
         }
-
-        $postData['file']['name'] = str_replace(['/', '&', '?', '=', '#', ':', '%', '+'], '_', h($postData['file']['name']));
-        $postData['name'] = $postData['file'];
-        $postData['alt'] = $postData['name']['name'];
+        /** @var UploadedFile $file */
+        $file = $postData['file'];
+        $name = $file->getClientFilename();
+        $name = str_replace(['/', '&', '?', '=', '#', ':', '%', '+'], '_', h($name));
+        $postData['name'] = new UploadedFile($file->getStream(), $file->getSize(), $file->getError(), $name, $file->getClientMediaType());
+        $postData['alt'] = $name;
         $entity = $this->UploaderFiles->patchEntity($this->getNew(), $postData);
         return $this->UploaderFiles->saveOrFail($entity);
     }
@@ -237,10 +238,10 @@ class UploaderFilesService implements UploaderFilesServiceInterface
             throw new BcException(__d('baser_core', 'ファイルの変更権限がありません。' ));
         }
         if (!empty($postData['publish_begin'])) {
-            $postData['publish_begin'] = new FrozenTime($postData['publish_begin']);
+            $postData['publish_begin'] = new \Cake\I18n\DateTime($postData['publish_begin']);
         }
         if (!empty($postData['publish_end'])) {
-            $postData['publish_end'] = new FrozenTime($postData['publish_end']);
+            $postData['publish_end'] = new \Cake\I18n\DateTime($postData['publish_end']);
         }
         $entity = $this->UploaderFiles->patchEntity($entity, $postData);
         return $this->UploaderFiles->saveOrFail($entity);

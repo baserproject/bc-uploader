@@ -21,6 +21,7 @@ use BaserCore\Annotation\UnitTest;
 /**
  * アップローダーヘルパー
  */
+#[\AllowDynamicProperties]
 class UploaderHelper extends Helper
 {
 
@@ -43,7 +44,7 @@ class UploaderHelper extends Helper
      *
      * @var array
      */
-    public $helpers = ['Html'];
+    public array $helpers = ['Html'];
 
     /**
      * Before Render
@@ -51,6 +52,7 @@ class UploaderHelper extends Helper
      * @return void
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function beforeRender(Event $event, $viewFile)
     {
@@ -66,6 +68,7 @@ class UploaderHelper extends Helper
      * @return string imgタグ
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function file(UploaderFile $uploaderFile, array $options = [])
     {
@@ -101,6 +104,7 @@ class UploaderHelper extends Helper
      * @return string
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function getFileUrl($fileName)
     {
@@ -120,6 +124,7 @@ class UploaderHelper extends Helper
      * @return string
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function download(UploaderFile $uploaderFile, $linkText = '≫ ダウンロード')
     {
@@ -134,6 +139,7 @@ class UploaderHelper extends Helper
      * @param array $data
      * @return bool
      * @checked
+     * @unitTest
      */
     public function isLimitSetting($data)
     {
@@ -155,6 +161,7 @@ class UploaderHelper extends Helper
      * @return boolean
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function isPublish($data)
     {

@@ -1,6 +1,4 @@
 <?php
-// TODO ucmitz  : コード確認要
-return;
 /**
  * baserCMS :  Based Website Development Project <https://basercms.net>
  * Copyright (c) baserCMS Users Community <https://basercms.net/community/>
@@ -11,32 +9,38 @@ return;
  * @license         https://basercms.net/license/index.html
  */
 
-App::uses('UploaderViewEventListener', 'BcUploader.Event');
+namespace BcUploader\Test\TestCase\Event;
+use BaserCore\Test\Scenario\InitAppScenario;
+use BaserCore\TestSuite\BcTestCase;
+use BcBlog\View\BlogAdminAppView;
+use BcUploader\Event\BcUploaderViewEventListener;
+use Cake\Event\Event;
+use CakephpFixtureFactories\Scenario\ScenarioAwareTrait;
 
 /**
  * Class UploaderViewEventListenerTest
  *
- * @property  UploaderViewEventListener $UploaderViewEventListener
+ * @property  BcUploaderViewEventListener $UploaderViewEventListener
  */
-class UploaderViewEventListenerTest extends BaserTestCase
+class UploaderViewEventListenerTest extends BcTestCase
 {
+    use ScenarioAwareTrait;
+
+    use ScenarioAwareTrait;
 
     /**
      * set up
-     *
-     * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
+        $this->UploaderViewEventListener = new BcUploaderViewEventListener();
     }
 
     /**
-     * tearDown
-     *
-     * @return void
+     * tear down
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
     }
@@ -51,7 +55,31 @@ class UploaderViewEventListenerTest extends BaserTestCase
      */
     public function testAfterLayout()
     {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
+        $this->loadFixtureScenario(InitAppScenario::class);
+
+        //BcUploaderViewがある場合、
+        $request = $this->loginAdmin($this->getRequest("/baser/admin/bc-blog/blog_posts/add/1"));
+        $BcAdminAppView = new BlogAdminAppView($request);
+        $BcAdminAppView->loadHelper('BaserCore.BcCkeditor');
+        $BcAdminAppView->assign('content', '</head>{"ckeditorField":"editor_content"');
+        $event = new Event('View.afterLayout', $BcAdminAppView);
+
+        $this->UploaderViewEventListener->afterLayout($event);
+
+        $content = $BcAdminAppView->fetch('content');
+        //JSを読み込むできるか確認すること
+        $this->assertTextContains('画像を選択するか、URLを直接入力して下さい。', $content);
+
+        //BcUploaderViewがない場合、
+        $BcAdminAppView = new BlogAdminAppView($this->getRequest("/"));
+        $BcAdminAppView->assign('content', '</head>{"ckeditorField":"editor_content"');
+        $event = new Event('View.afterLayout', $BcAdminAppView);
+
+        $this->UploaderViewEventListener->afterLayout($event);
+
+        $content = $BcAdminAppView->fetch('content');
+        //JSを読み込むできないか確認すること
+        $this->assertEquals('</head>{"ckeditorField":"editor_content"', $content);
     }
 
     /**
@@ -59,7 +87,14 @@ class UploaderViewEventListenerTest extends BaserTestCase
      */
     public function test__getCkeditorUploaderScript()
     {
-        $this->markTestIncomplete('このテストは、まだ実装されていません。');
+        //準備
+        $this->loadFixtureScenario(InitAppScenario::class);
+        $request = $this->loginAdmin($this->getRequest("/baser/admin/bc-blog/blog_posts/add/1"));
+        $BcAdminAppView = new BlogAdminAppView($request);
+        //対象メソッドをコール
+        $rs = $this->execPrivateMethod($this->UploaderViewEventListener, '__getCkeditorUploaderScript', [$BcAdminAppView->helpers()->get('BcHtml'), 1]);
+        //戻り値を確認
+        $this->assertMatchesRegularExpression('/.*CKEDITOR.config.contentsCss instanceof Array.*editor_1.+?/s', $rs);
     }
 
     /**

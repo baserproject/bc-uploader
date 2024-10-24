@@ -107,6 +107,7 @@ class UploaderFilesTable extends AppTable
      * @return bool
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function checkPeriod($value, $context = null)
     {
@@ -125,6 +126,7 @@ class UploaderFilesTable extends AppTable
      * @return Validator
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function validationDefault(Validator $validator): Validator
     {
@@ -180,6 +182,7 @@ class UploaderFilesTable extends AppTable
      * @return bool
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options)
     {
@@ -220,6 +223,7 @@ class UploaderFilesTable extends AppTable
      * @return mixed
      * @checked
      * @noTodo
+     * @unitTest
      */
     public function getSourceFileName($fileName)
     {
@@ -234,7 +238,7 @@ class UploaderFilesTable extends AppTable
      * @checked
      * @noTodo
      */
-    public function beforeDelete(Event $event)
+    public function beforeDelete(EventInterface $event, EntityInterface $entity, \ArrayObject $options)
     {
         $entity = $event->getData('entity');
         $fileUploader = $this->getFileUploader();
