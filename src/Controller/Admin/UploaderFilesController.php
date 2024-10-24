@@ -38,7 +38,6 @@ class UploaderFilesController extends BcAdminAppController
      * @return \Cake\Http\Response|void
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function beforeFilter(EventInterface $event)
     {
@@ -53,7 +52,6 @@ class UploaderFilesController extends BcAdminAppController
      * @return void
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function index(UploaderFilesAdminServiceInterface $service)
     {
@@ -74,7 +72,6 @@ class UploaderFilesController extends BcAdminAppController
      * @param int $id
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function ajax_index(UploaderFilesAdminServiceInterface $service, int $id)
     {
@@ -94,7 +91,6 @@ class UploaderFilesController extends BcAdminAppController
      * @return void
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function ajax_list(UploaderFilesAdminServiceInterface $service, int $id = null)
     {
@@ -122,7 +118,6 @@ class UploaderFilesController extends BcAdminAppController
      * @param string $size
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function ajax_image(
         UploaderFilesAdminServiceInterface $service,
@@ -141,7 +136,6 @@ class UploaderFilesController extends BcAdminAppController
      * @return \Cake\Http\Response|void|null
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function edit(UploaderFilesServiceInterface $service, int $id)
     {
@@ -175,7 +169,6 @@ class UploaderFilesController extends BcAdminAppController
      * @return    void
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function delete(UploaderFilesServiceInterface $service, int $id)
     {
@@ -199,7 +192,6 @@ class UploaderFilesController extends BcAdminAppController
      * @param int|null $listId
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function ajax_get_search_box(int $listId = null)
     {

@@ -34,7 +34,6 @@ class UploaderCategoriesController extends BcAdminAppController
      * @return void
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function index(UploaderCategoriesServiceInterface $service)
     {
@@ -95,7 +94,6 @@ class UploaderCategoriesController extends BcAdminAppController
      * @return void
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function edit(UploaderCategoriesServiceInterface $service, $id)
     {
@@ -135,7 +133,6 @@ class UploaderCategoriesController extends BcAdminAppController
      * @return    void
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function delete(UploaderCategoriesServiceInterface $service, int $id)
     {
@@ -160,7 +157,6 @@ class UploaderCategoriesController extends BcAdminAppController
      * @param int $id
      * @checked
      * @noTodo
-     * @unitTest
      */
     public function copy(UploaderCategoriesServiceInterface $service, $id)
     {

@@ -16,7 +16,6 @@ use BcUploader\Service\Admin\UploaderFilesAdminService;
 use BcUploader\Service\Admin\UploaderFilesAdminServiceInterface;
 use BcUploader\Test\Factory\UploaderConfigFactory;
 use BcUploader\Test\Factory\UploaderFileFactory;
-use Cake\Datasource\Paging\NumericPaginator;
 use CakephpFixtureFactories\Scenario\ScenarioAwareTrait;
 
 /**
@@ -82,7 +81,7 @@ class UploadFilesAdminServiceTest extends BcTestCase
 
         //対象メソッドをコール
         $rs = $this->UploaderFilesAdminService->getViewVarsForAjaxList(
-            (new NumericPaginator())->paginate($this->UploaderFilesAdminService->getIndex([])),
+            $this->UploaderFilesAdminService->getIndex([])->all(),
             1
         );
 
@@ -100,8 +99,7 @@ class UploadFilesAdminServiceTest extends BcTestCase
     {
         //limitedフォルダーと.htaccessファイルが存在しない場合、
         $limitPath = '/var/www/html/webroot/files/uploads/limited';
-        if (file_exists($limitPath . DS . '.htaccess'))
-            unlink($limitPath . DS . '.htaccess');
+        unlink($limitPath . DS . '.htaccess');
         rmdir($limitPath);
         //対象メソッドをコール
         $rs = $this->execPrivateMethod($this->UploaderFilesAdminService, 'checkInstall', []);
