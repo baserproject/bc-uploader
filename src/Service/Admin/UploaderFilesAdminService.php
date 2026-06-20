@@ -37,7 +37,7 @@ class UploaderFilesAdminService extends UploaderFilesService implements Uploader
      * @noTodo
      * @unitTest
      */
-    public function getViewVarsForIndex(int $id = null)
+    public function getViewVarsForIndex(?int $id = null)
     {
         return [
             'listId' => $id,
@@ -56,7 +56,7 @@ class UploaderFilesAdminService extends UploaderFilesService implements Uploader
      * @noTodo
      * @unitTest
      */
-    public function getViewVarsForAjaxList(PaginatedResultSet $entities, int $listId = null)
+    public function getViewVarsForAjaxList(PaginatedResultSet $entities, ?int $listId = null)
     {
         $uploaderConfig = $this->uploaderConfigsService->get();
         return [
@@ -111,6 +111,12 @@ class UploaderFilesAdminService extends UploaderFilesService implements Uploader
             if (!is_writable($savePath)) {
                 $installMessage = sprintf(__d('baser_core', '%sに書き込み権限を与えてください'), $viewSavePath);
             }
+        }
+        // limited フォルダが存在していても、限定公開ファイル保護用の .htaccess が
+        // 失われている場合は復元する。
+        if (is_dir($limitedPath) && !file_exists($limitedPath . DS . '.htaccess')) {
+            $File = new BcFile($limitedPath . DS . '.htaccess');
+            $File->write("Order allow,deny\nDeny from all");
         }
         return $installMessage;
     }
