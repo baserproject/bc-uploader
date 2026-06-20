@@ -43,7 +43,7 @@ class UploaderFilesController extends BcAdminAppController
     public function beforeFilter(EventInterface $event)
     {
         $this->viewBuilder()->addHelpers(['BcUploader.Uploader']);
-        return parent::beforeFilter($event);
+        parent::beforeFilter($event);
     }
 
     /**
@@ -96,7 +96,7 @@ class UploaderFilesController extends BcAdminAppController
      * @noTodo
      * @unitTest
      */
-    public function ajax_list(UploaderFilesAdminServiceInterface $service, int $id = null)
+    public function ajax_list(UploaderFilesAdminServiceInterface $service, ?int $id = null)
     {
         $this->viewBuilder()->disableAutoLayout();
         $this->setViewConditions('UploadFile', [
@@ -201,7 +201,7 @@ class UploaderFilesController extends BcAdminAppController
      * @noTodo
      * @unitTest
      */
-    public function ajax_get_search_box(int $listId = null)
+    public function ajax_get_search_box(?int $listId = null)
     {
         $this->viewBuilder()->disableAutoLayout();
         $this->set('listId', $listId);
