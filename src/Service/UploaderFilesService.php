@@ -79,7 +79,7 @@ class UploaderFilesService implements UploaderFilesServiceInterface
 
         $conditions = $this->createAdminIndexConditions($params);
         $query = $this->UploaderFiles->find()
-            ->orderBy(['created DESC'])
+            ->order(['created DESC'])
             ->where($conditions);
 
         if($params['num']) {
@@ -243,7 +243,7 @@ class UploaderFilesService implements UploaderFilesServiceInterface
      */
     public function update(EntityInterface $entity, array $postData)
     {
-        if(!$this->isEditable($entity->toArray())) {
+        if(!$this->isEditable($postData)) {
             throw new BcException(__d('baser_core', 'ファイルの変更権限がありません。' ));
         }
         if(!empty($postData['overwrite']) && !empty($postData['file'])) {
@@ -284,7 +284,7 @@ class UploaderFilesService implements UploaderFilesServiceInterface
         if(!isset($postData['user_id'])) return false;
         $user = BcUtil::loginUser();
         if(!$user) return false;
-        if (!BcUtil::isAdminUser($user) && (int)$postData['user_id'] !== (int)$user->id) {
+        if (!BcUtil::isAdminUser($user) && $postData['user_id'] !== $user->id) {
             return false;
         }
         return true;

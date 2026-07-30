@@ -179,7 +179,7 @@ class UploaderFilesTable extends AppTable
      * Before Save
      *
      * @param array $options
-     * @return void
+     * @return bool
      * @checked
      * @noTodo
      * @unitTest
@@ -205,7 +205,7 @@ class UploaderFilesTable extends AppTable
                 // ファイルを上書きアップロードする場合 BcFileUploader の仕様として、一時的に null が設定されてしまう
                 // 上記処理の場合、公開期間の変更はない前提の仕様のため、処理をスキップする
                 if(is_null($entity->name)) {
-                    return;
+                    return true;
                 }
                 if (file_exists($savePath . 'limited' . DS . $entity->name)) {
                     rename($savePath . 'limited' . DS . $entity->name, $savePath . $entity->name);
@@ -218,6 +218,8 @@ class UploaderFilesTable extends AppTable
                 }
             }
         }
+
+        return true;
     }
 
     /**

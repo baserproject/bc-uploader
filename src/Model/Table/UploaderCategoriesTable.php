@@ -11,10 +11,8 @@
 
  namespace BcUploader\Model\Table;
 
-use BaserCore\Error\BcException;
 use BaserCore\Model\Table\AppTable;
 use Cake\Datasource\EntityInterface;
-use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Exception\PersistenceFailedException;
 use Cake\Validation\Validator;
 use BaserCore\Annotation\UnitTest;
@@ -97,7 +95,7 @@ class UploaderCategoriesTable extends AppTable
         if ($id) {
             $entity = $this->find()->where(['UploaderCategories.id' => $id])->first();
             if (!$entity) {
-                throw new RecordNotFoundException('Record not found in table "uploader_categories"');
+                return false;
             }
         }
         if (!$entity) {
